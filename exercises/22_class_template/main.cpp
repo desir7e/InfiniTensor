@@ -1,5 +1,5 @@
 ﻿#include "../exercise.h"
-
+#include <cstring>
 // READ: 类模板 <https://zh.cppreference.com/w/cpp/language/class_template>
 
 template<class T>
@@ -16,7 +16,7 @@ struct Tensor4D {
         unsigned int size = shape[0] * shape[1] * shape[2] * shape[3];
         // TODO: 填入正确的 shape 并计算 size
         data = new T[size];
-        std::memcpy(data, data_, size * sizeof(T));
+        memcpy(data, data_, size * sizeof(T));
     }
     ~Tensor4D() {
         delete[] data;

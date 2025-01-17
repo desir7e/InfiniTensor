@@ -5,10 +5,21 @@
 // READ: 纯函数 <https://zh.wikipedia.org/wiki/%E7%BA%AF%E5%87%BD%E6%95%B0>
 static unsigned long long fibonacci(int i) {
     // TODO: 为缓存设置正确的初始值
-    static unsigned long long cache[96], cached;
+    static unsigned long long cache[96]{0,1};
     // TODO: 设置正确的循环条件
-    for (; false; ++cached) {
-        cache[cached] = cache[cached - 1] + cache[cached - 2];
+    
+     
+    // 检查缓存是否已计算
+    if (cache[i] != 0 || i == 0 || i == 1) {
+        return cache[i];
+    }
+    
+    // 使用循环填充 cache 数组，计算需要的斐波那契数
+    for (int j = 2; j <= i; ++j) {
+        // 如果 cache[j] 尚未计算过，就计算并缓存
+        if (cache[j] == 0) {
+            cache[j] = cache[j - 1] + cache[j - 2];
+        }
     }
     return cache[i];
 }

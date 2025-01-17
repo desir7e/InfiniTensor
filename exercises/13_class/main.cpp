@@ -15,13 +15,30 @@ class Fibonacci {
 public:
     // TODO: 实现构造器
     // Fibonacci()
-
+  
+Fibonacci() : cached(0) {
+        // 初始化 cache 数组，最初缓存的斐波那契数是 0 和 1
+        cache[0] = 0;
+        cache[1] = 1;
+        cached = 2;  // 因为我们已经缓存了 fib(0) 和 fib(1)
+    }
     // TODO: 实现正确的缓存优化斐波那契计算
     size_t get(int i) {
-        for (; false; ++cached) {
+        // 如果缓存中已经有该斐波那契数，直接返回
+        if (i < cached) {
+            return cache[i];
+        }
+        
+        // 如果缓存中没有，需要从缓存中最后一项开始计算，直到计算到所需的 i
+        for (int j = cached; j <= i; ++j) {
+            cache[j] = cache[j - 1] + cache[j - 2];
+        }
+        cached = i + 1;  // 更新缓存的大小
+        return cache[i];
+        /*for (; false; ++cached) {
             cache[cached] = cache[cached - 1] + cache[cached - 2];
         }
-        return cache[i];
+        return cache[i];*/
     }
 };
 

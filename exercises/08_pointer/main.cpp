@@ -5,7 +5,19 @@ bool is_fibonacci(int *ptr, int len, int stride) {
     ASSERT(len >= 3, "`len` should be at least 3");
     // TODO: 编写代码判断从 ptr 开始，每 stride 个元素取 1 个元素，组成长度为 n 的数列是否满足
     // arr[i + 2] = arr[i] + arr[i + 1]
-    return true;
+    for (int i = 0; i < len - 2; ++i) {
+        // 计算索引 i、i+1、i+2 对应的值
+        int first = ptr[i * stride];
+        int second = ptr[(i + 1) * stride];
+        int third = ptr[(i + 2) * stride];
+
+        // 检查斐波那契关系: arr[i + 2] = arr[i] + arr[i + 1]
+        if (third != first + second) {
+            return false;  // 如果不符合，返回 false
+        }
+    }
+    return true;  // 如果所有检查都通过，返回 true
+    
 }
 
 // ---- 不要修改以下代码 ----

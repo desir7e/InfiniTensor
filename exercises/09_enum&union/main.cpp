@@ -37,8 +37,9 @@ ColorEnum convert_by_pun(Color c) {
 
     TypePun pun;
     // TODO: 补全类型双关转换
-
-    return pun.e;
+    pun.c = c;  // 将 Color 类型的枚举值存入 pun.c
+    return pun.e;  // 返回 ColorEnum 类型的枚举值
+   //return pun.e;
 }
 
 int main(int argc, char **argv) {

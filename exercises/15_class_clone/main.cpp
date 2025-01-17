@@ -7,22 +7,47 @@
 class DynFibonacci {
     size_t *cache;
     int cached;
+    int capacity;
 
 public:
     // TODO: 实现动态设置容量的构造器
-    DynFibonacci(int capacity): cache(new ?), cached(?) {}
+    //DynFibonacci(int capacity): cache(new ?), cached(?) {}
+    DynFibonacci(int capacity) : capacity(capacity), cached(2) {
+        cache = new size_t[capacity];
+        cache[0] = 0;  // 初始值 fib(0) = 0
+        cache[1] = 1;  // 初始值 fib(1) = 1
+    }
 
     // TODO: 实现复制构造器
-    DynFibonacci(DynFibonacci const &) = delete;
-
+   
+ // 复制构造器：实现深拷贝
+    DynFibonacci(DynFibonacci const &other) : capacity(other.capacity), cached(other.cached) {
+        // 分配新的内存空间
+        cache = new size_t[capacity];
+        
+        // 复制原对象的数据
+        for (int i = 0; i < cached; ++i) {
+            cache[i] = other.cache[i];
+        }
+    }
     // TODO: 实现析构器，释放缓存空间
-    ~DynFibonacci();
+    ~DynFibonacci(){
+          
+      delete[] cache;
+    };
 
     // TODO: 实现正确的缓存优化斐波那契计算
     size_t get(int i) {
-        for (; false; ++cached) {
-            cache[cached] = cache[cached - 1] + cache[cached - 2];
+       
+        if (i >= capacity) {
+            throw std::out_of_range("Requested Fibonacci index exceeds cache capacity.");
         }
+
+        // 如果缓存中尚未计算到 fib(i)，则进行计算
+        for (int j = cached; j <= i; ++j) {
+            cache[j] = cache[j - 1] + cache[j - 2];
+        }
+        cached = i + 1;  // 更新缓存已计算的数量
         return cache[i];
     }
 

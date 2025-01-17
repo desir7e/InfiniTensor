@@ -12,25 +12,71 @@
 class DynFibonacci {
     size_t *cache;
     int cached;
+    int capacity;
 
 public:
     // TODO: 实现动态设置容量的构造器
-    DynFibonacci(int capacity): cache(new ?), cached(?) {}
+     
+DynFibonacci(int capacity): cache(new size_t[capacity]), cached(2), capacity(capacity) {
+        cache[0] = 0; // Fibonacci(0)
+        cache[1] = 1; // Fibonacci(1)
+    }
+    //DynFibonacci(int capacity): cache(new ?), cached(?) {}
 
     // TODO: 实现移动构造器
-    DynFibonacci(DynFibonacci &&) noexcept = delete;
-
+    //DynFibonacci(DynFibonacci &&) noexcept = delete;
+    DynFibonacci(DynFibonacci &&other) noexcept:cache(other.cache), cached(other.cached), capacity(other.capacity) {
+        other.cache = nullptr;  // Leave the source object in a valid state
+        other.cached = 0;
+        other.capacity = 0;
+    }
     // TODO: 实现移动赋值
     // NOTICE: ⚠ 注意移动到自身问题 ⚠
-    DynFibonacci &operator=(DynFibonacci &&) noexcept = delete;
+    //DynFibonacci &operator=(DynFibonacci &&) noexcept = delete;
+    DynFibonacci&operator=(DynFibonacci &&other) noexcept
+ {
+        if (this != &other) {  // Avoid self-assignment
+            delete[] cache;  // Release existing resources
+
+            cache = other.cache;
+            cached = other.cached;
+            capacity = other.capacity;
+
+            other.cache = nullptr;
+            other.cached = 0;
+            other.capacity = 0;
+        }
+        return *this;
+    }
 
     // TODO: 实现析构器，释放缓存空间
-    ~DynFibonacci();
+    ~DynFibonacci(){
+         
+    delete[] cache;
+    };
 
     // TODO: 实现正确的缓存优化斐波那契计算
     size_t operator[](int i) {
-        for (; false; ++cached) {
+        /*for (; false; ++cached) {
             cache[cached] = cache[cached - 1] + cache[cached - 2];
+        }
+        return cache[i];*/
+
+        if (i >= cached) { // Need to compute new Fibonacci numbers
+            for (int j = cached; j <= i; ++j) {
+                if(j >= capacity) {
+                    // Resize the cache if necessary (increase capacity)
+                    capacity *= 2;
+                    size_t* newCache = new size_t[capacity];
+                    for (int k = 0; k < cached; ++k) {
+                        newCache[k] = cache[k];
+                    }
+                    delete[] cache;
+                    cache = newCache;
+                }
+                cache[j] = cache[j - 1] + cache[j - 2];
+            }
+            cached = i + 1;  // Update the cached index
         }
         return cache[i];
     }
@@ -64,3 +110,4 @@ int main(int argc, char **argv) {
 
     return 0;
 }
+

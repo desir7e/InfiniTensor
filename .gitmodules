@@ -1,0 +1,3 @@
+[submodule "exercises/exams"]
+	path = exercises/exams
+	url = https://github.com/desir7e/exam-grading

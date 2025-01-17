@@ -8,7 +8,12 @@ struct Tensor4D {
     T *data;
 
     Tensor4D(unsigned int const shape_[4], T const *data_) {
-        unsigned int size = 1;
+        //unsigned int size = 1;
+         // 复制形状信息
+        std::memcpy(shape, shape_, sizeof(shape));
+
+        // 计算张量的大小
+        unsigned int size = shape[0] * shape[1] * shape[2] * shape[3];
         // TODO: 填入正确的 shape 并计算 size
         data = new T[size];
         std::memcpy(data, data_, size * sizeof(T));
@@ -26,12 +31,85 @@ struct Tensor4D {
     // `others` 长度为 1 但 `this` 长度不为 1 的维度将发生广播计算。
     // 例如，`this` 形状为 `[1, 2, 3, 4]`，`others` 形状为 `[1, 2, 1, 4]`，
     // 则 `this` 与 `others` 相加时，3 个形状为 `[1, 2, 1, 4]` 的子张量各自与 `others` 对应项相加。
-    Tensor4D &operator+=(Tensor4D const &others) {
+   /*  Tensor4D &operator+=(Tensor4D const &others) {
         // TODO: 实现单向广播的加法
+          // 检查广播兼容性
+        for (int i = 0; i < 4; ++i) {
+            if (shape[i] != others.shape[i] && others.shape[i] != 1) {
+                // 如果维度不匹配且others的对应维度不为1，则不兼容
+                throw std::invalid_argument("Shapes are not broadcast-compatible.");
+            }
+        }
+
+        // 广播相加
+        unsigned int size = 1;
+        for (int i = 0; i < 4; ++i) {
+            size *= shape[i];
+        }
+
+        // 执行加法操作
+        for (unsigned int i = 0; i < size; ++i) {
+            unsigned int indices[4];
+            unsigned int temp = i;
+
+            // 计算各维度的索引
+            for (int j = 3; j >= 0; --j) {
+                indices[j] = temp % shape[j];
+                temp /= shape[j];
+            }
+
+            // 获取广播值
+            T other_value = 0;
+            for (int j = 0; j < 4; ++j) {
+                if (others.shape[j] == 1 || others.shape[j] == shape[j]) {
+                    other_value = others.data[i];  // 由于广播，只有1维会重复
+                    break;
+                }
+            }
+
+            // 执行加法
+            data[i] += other_value;
+        }
+
+        return *this;
+    }
+}; */
+Tensor4D& operator+=(const Tensor4D& others) {
+      // 检查广播兼容性
+        for (int i = 0; i < 4; ++i) {
+            if (shape[i] != others.shape[i] && others.shape[i] != 1) {
+                throw std::invalid_argument("Shapes are not broadcast-compatible.");
+            }
+        }
+        unsigned int size = 1;
+        for (int i = 0; i < 4; ++i) {
+            size *= shape[i];
+        }
+        // 计算广播后的索引映射
+        auto getBroadcastIndex = [&](unsigned int index, int dim) -> unsigned int {
+            unsigned int stride = 1;
+            for (int j = 3; j > dim; --j) {
+                stride *= shape[j];
+            }
+            unsigned int otherDimSize = others.shape[dim];
+            return (index / stride) % otherDimSize;
+        };
+
+        // 执行加法操作
+        for (unsigned int i = 0; i < size; ++i) {
+            unsigned int other_index = 0;
+            unsigned int stride = 1;
+            for (int j = 3; j >= 0; --j) {
+                unsigned int other_dim_index = getBroadcastIndex(i, j);
+                other_index += other_dim_index * stride;
+                stride *= others.shape[j];
+            }
+            data[i] += others.data[other_index];
+        }
+
         return *this;
     }
 };
-
 // ---- 不要修改以下代码 ----
 int main(int argc, char **argv) {
     {
